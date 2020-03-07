@@ -1,0 +1,61 @@
+#!/bin/bash
+
+echo "spec is copied to clipboard"
+
+case $1 in
+  "init" )
+    case $2 in
+      1 )
+        echo '
+        require_relative "../game"
+
+        describe "Game" do
+          let(:toivo) { Player::Core.new("Toivo", "X") }
+          let(:simon) { Player::Core.new("Simon", "O") }
+
+          it "works to create a initial game and add user to it" do
+            init = GameInitiative.new
+            init.add_player toivo
+            init.add_player simon
+            game = init.start_game
+
+            expect(game).to be_a(Game)
+          end
+        end
+        ' | pbcopy
+        ;;
+
+      2 )
+        echo '
+        it "creates player" do
+          player = Player::Core.new("Toivo", "X")
+
+          expect(player.name).to eq("Toivo")
+          expect(player.symbol).to eq("X")
+        end
+        ' | pbcopy
+        ;;
+      3 )
+        echo '
+        it "creates player" do
+          player = Player::Core.new("Toivo", "X")
+
+          expect(player.name).to eq("Toivo")
+          expect(player.symbol).to eq("X")
+        end
+        ' | pbcopy
+        ;;
+    esac
+
+    ;;
+  "ai" )
+    echo "todo"
+    ;;
+  "bt" | "bigtable" )
+    echo "todo"
+    ;;
+  "mu" | "multiusers" )
+    echo "todo"
+    ;;
+
+esac
