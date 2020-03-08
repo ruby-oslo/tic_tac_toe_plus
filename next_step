@@ -48,14 +48,14 @@ case $1 in
     esac
 
     ;;
-  "ai" )
+  "ai" | "artifisalinteigence" )
     echo "todo"
     ;;
   "bt" | "bigtable" )
-    echo "todo"
+    echo "done but needs filling"
     ;;
   "mu" | "multiusers" )
-    echo "todo"
+    echo "done but needs filling"
     ;;
 
 esac
