@@ -34,7 +34,7 @@ class GameInitiative
   end
 
   def start_game
-    raise "need two players" if @players.length != 2
+    raise "need at least two players" if @players.length < 2
 
     Game.new(@players, dimension: @dimension, streak_to_win: streak_to_win)
   end

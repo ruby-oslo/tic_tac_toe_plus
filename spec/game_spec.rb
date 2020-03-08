@@ -259,5 +259,35 @@ describe "Game" do
       expect(game.winner).to eq(toivo)
     end
   end
+
+  it "let multiple user play the game together" do
+    init = GameInitiative.new
+    telhaug = Player::Core.new("Telhaug", "👪")
+    init.add_player telhaug
+    init.add_player toivo
+    init.add_player simon
+    init.dimension = 4
+    game = init.start_game
+    game.play_turn telhaug, 3, 2
+    game.play_turn toivo, 3, 3
+    game.play_turn simon, 2, 3
+    game.play_turn telhaug, 3, 1
+    game.play_turn toivo, 2, 2
+    game.play_turn simon, 1, 3
+    game.play_turn telhaug, 3, 0
+
+    expect(game.winner).to eq(telhaug)
+    expect(game.to_terminal).to eq(<<~TEXT)
+          0   1   2   3
+        3   | O | O | X 3
+          - + - + - + -
+        2   |   | X | 👪 2
+          - + - + - + -
+        1   |   |   | 👪 1
+          - + - + - + -
+        0   |   |   | 👪 0
+          0   1   2   3
+  TEXT
+  end
 end
 
