@@ -20,8 +20,13 @@ module Player
 end
 
 class GameInitiative
+  attr_accessor :dimension
+  attr_accessor :streak_to_win
+
   def initialize()
     @players = []
+    @dimension = 3
+    @streak_to_win = 3
   end
 
   def add_player player
@@ -31,31 +36,32 @@ class GameInitiative
   def start_game
     raise "need two players" if @players.length != 2
 
-    Game.new(@players)
+    Game.new(@players, dimension: @dimension, streak_to_win: streak_to_win)
   end
 end
 
 class Game
   attr_accessor :game
   attr_reader :winner
-  GAME_SIZE = 3
 
-  def initialize(players)
+  def initialize(players, dimension:, streak_to_win:)
     @players = players.cycle
     @board = {}
+    @dimension = dimension
+    @streak_to_win = streak_to_win
   end
   def next_player; @players.peek end
 
   def check_for_winner x, y
     winning_possitions = [
-      [[0,0], [ 0, 1], [ 0, 2]], # N
-      [[0,0], [ 1, 1], [ 2, 2]], # NE
-      [[0,0], [ 1, 0], [ 2, 0]], # E
-      [[0,0], [-1, 1], [-2, 2]], # SE
-      [[0,0], [-1, 0], [-2, 0]], # S
-      [[0,0], [-1,-1], [-2,-2]], # SW
-      [[0,0], [ 0,-1], [ 0,-2]], # W
-      [[0,0], [ 1,-1], [ 2,-2]], # NW
+        @streak_to_win.times.map{|i|[ 0, i]}, # N
+        @streak_to_win.times.map{|i|[ i, i]}, # NE
+        @streak_to_win.times.map{|i|[ i, 0]}, # E
+        @streak_to_win.times.map{|i|[ i,-i]}, # SE
+        @streak_to_win.times.map{|i|[ 0,-i]}, # S
+        @streak_to_win.times.map{|i|[-i,-i]}, # SW
+        @streak_to_win.times.map{|i|[-i, 0]}, # W
+        @streak_to_win.times.map{|i|[-i, i]}, # NW
     ]
     won = winning_possitions.any? do |strike|
       strike.all? { |(x_extra, y_extra)|
@@ -70,17 +76,17 @@ class Game
     end
   end
   def free_slots
-    @board.length - 9
+    @board.length - @dimension**2
   end
 
   def play_turn player, x, y
     raise "not your turn"if @players.peek != player
     raise "piece is taken" if @board[[x,y]]
-    raise "off the grid" if !(0..3).include?(x) || !(0..3).include?(y)
+    raise "off the grid" if !(0...@dimension).include?(x) || !(0...@dimension).include?(y)
     @players.next # just to continue the cycle
 
     @board[[x,y]] = player
-    @winner = check_for_winner x,y
+    @winner ||= check_for_winner x,y
     @board = {} if free_slots.zero?
   end
 
@@ -102,15 +108,20 @@ class Game
       puts "We have a winner, #{winner.name}!🎉"
     end
   end
+
   def to_terminal
+    x_ruler = @dimension.times.map { |e| " #{e} " }.join(" ").strip
+    x_spacer = @dimension.times.map { |e| " - " }.join("+").strip
+
+    table = @dimension.times.reverse_each.map do |y|
+      "#{y}#{@dimension.times.map { |x| " #{@board[[x,y]]&.symbol || " "} " }.join("|")}#{y}"
+    end
+      .join("\n  #{x_spacer}\n")
+
     <<~BOARD
-        0   1   2
-      2 #{@board[[0,2]]&.symbol || " "} | #{@board[[1,2]]&.symbol || " "} | #{@board[[2,2]]&.symbol || " "} 2
-        – + – + –
-      1 #{@board[[0,1]]&.symbol || " "} | #{@board[[1,1]]&.symbol || " "} | #{@board[[2,1]]&.symbol || " "} 1
-        – + – + –
-      0 #{@board[[0,0]]&.symbol || " "} | #{@board[[1,0]]&.symbol || " "} | #{@board[[2,0]]&.symbol || " "} 0
-        0   1   2
+          #{x_ruler}
+        #{table}
+          #{x_ruler}
     BOARD
   end
 end
