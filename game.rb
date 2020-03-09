@@ -52,28 +52,28 @@ class Game
   end
   def next_player; @players.peek end
 
-  def check_for_winner x, y
+  def check_for_winner player
     winning_possitions = [
-        @streak_to_win.times.map{|i|[ 0, i]}, # N
-        @streak_to_win.times.map{|i|[ i, i]}, # NE
-        @streak_to_win.times.map{|i|[ i, 0]}, # E
-        @streak_to_win.times.map{|i|[ i,-i]}, # SE
-        @streak_to_win.times.map{|i|[ 0,-i]}, # S
-        @streak_to_win.times.map{|i|[-i,-i]}, # SW
-        @streak_to_win.times.map{|i|[-i, 0]}, # W
-        @streak_to_win.times.map{|i|[-i, i]}, # NW
+      @streak_to_win.times.map{|i|[ 0, i]}, # N
+      @streak_to_win.times.map{|i|[ i, i]}, # NE
+      @streak_to_win.times.map{|i|[ i, 0]}, # E
+      @streak_to_win.times.map{|i|[ i,-i]}, # SE
+      @streak_to_win.times.map{|i|[ 0,-i]}, # S
+      @streak_to_win.times.map{|i|[-i,-i]}, # SW
+      @streak_to_win.times.map{|i|[-i, 0]}, # W
+      @streak_to_win.times.map{|i|[-i, i]}, # NW
     ]
-    won = winning_possitions.any? do |strike|
-      strike.all? { |(x_extra, y_extra)|
-        @board[[x,y]] == @board[[x + x_extra ,y + y_extra]]
-      }
-    end
 
-    if won
-      @board[[x,y]]
-    else
-      nil
-    end
+    @board
+      .select{ |k, v| v == player }
+      .find do |(x,y),_|
+        winning_possitions.any? do |strike|
+          strike.all? { |(x_extra, y_extra)|
+            @board[[x,y]] == @board[[x + x_extra ,y + y_extra]]
+          }
+        end
+      end
+      &.last
   end
   def free_slots
     @board.length - @dimension**2
@@ -86,7 +86,7 @@ class Game
     @players.next # just to continue the cycle
 
     @board[[x,y]] = player
-    @winner ||= check_for_winner x,y
+    @winner ||= check_for_winner player
     @board = {} if free_slots.zero?
   end
 

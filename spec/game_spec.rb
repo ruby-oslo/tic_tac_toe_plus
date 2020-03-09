@@ -110,6 +110,15 @@ describe "Game" do
       expect(game.winner).to eq(toivo)
     end
 
+    it "determines a winner when thats the case #2" do
+      game.play_turn toivo, 0, 0
+      game.play_turn simon, 0, 1
+      game.play_turn toivo, 2, 2
+      game.play_turn simon, 1, 0
+      game.play_turn toivo, 1, 1
+
+      expect(game.winner).to eq(toivo)
+    end
 
     it "starts a new game then the table is full and not winner yet" do
       game.play_turn toivo, 0, 0
