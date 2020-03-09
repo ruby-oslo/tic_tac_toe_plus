@@ -20,15 +20,6 @@ describe "Game" do
     expect(game).to be_a(Game)
   end
 
-  it "after adding two players it lets the games begins" do
-    init = GameInitiative.new
-    init.add_player toivo
-    init.add_player simon
-    game = init.start_game
-
-    expect(game).to be_a(Game)
-  end
-
   context "game between Toivo and Simon" do
     let(:game) {
       init = GameInitiative.new
@@ -297,6 +288,39 @@ describe "Game" do
         0   |   |   | 👪 0
           0   1   2   3
   TEXT
+  end
+
+  describe "AI" do
+    describe "Random AI" do
+      let(:ai) { Player::DumAi.new("A") }
+      let(:game) {
+        init = GameInitiative.new
+        init.add_player ai
+        game = init.start_game
+      }
+
+      it "return array with with coordinates" do
+        x, y = ai.play_turn game
+
+        expect(x).to be_a(Integer)
+        expect(y).to be_a(Integer)
+      end
+
+      it "return different moves" do
+        expect(
+          10.times.map { ai.play_turn game }.uniq.length
+        ).to be > 1
+        x, y = ai.play_turn game
+      end
+
+      it "play on available places" do
+        8.times {
+          x, y = ai.play_turn(game)
+          game.play_turn ai, x, y
+        }
+        expect(game.board.length).to eq(8)
+      end
+    end
   end
 end
 

@@ -7,14 +7,29 @@ module Player
       @symbol = symbol
       @name = name
     end
-
-    def play_turn game; raise "Not implemented" end
   end
 
   class Terminal < Core
     def play_turn game
       print "#{name}, it's your turn, enter your coordinates x y: "
       return gets.split(" ", 2).map(&:to_i)
+    end
+  end
+
+  class DumAi < Core
+    def initialize(symbol)
+      @name = "Dum AI"
+      @symbol = symbol
+    end
+
+    def play_turn game
+      (0...game.dimension)
+        .to_a
+        .permutation(2)
+        .to_a
+        .concat((0...game.dimension).zip(0...game.dimension))
+        .select{|pos| game.board[pos].nil?}
+        .sample
     end
   end
 end
@@ -34,7 +49,7 @@ class GameInitiative
   end
 
   def start_game
-    raise "need at least two players" if @players.length < 2
+    raise "need at least two players" if @players.length < 1
 
     Game.new(@players, dimension: @dimension, streak_to_win: streak_to_win)
   end
@@ -43,6 +58,8 @@ end
 class Game
   attr_accessor :game
   attr_reader :winner
+  attr_reader :board
+  attr_reader :dimension
 
   def initialize(players, dimension:, streak_to_win:)
     @players = players.cycle
@@ -88,18 +105,6 @@ class Game
     @board[[x,y]] = player
     @winner ||= check_for_winner player
     @board = {} if free_slots.zero?
-  end
-
-  def start_game_loop
-    while winner.nil?
-      active_player = @players.next
-      x, y = active_player.play_turn self
-      raise "piece is taken" if @board[[x,y]]
-      @board[[x,y]] = active_player
-      @winner = check_for_winner x,y
-
-      print_status
-    end
   end
 
   def print_status
