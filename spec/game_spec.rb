@@ -300,13 +300,14 @@ describe "Game" do
           - + - + - + -
         0   |   |   | 👪 0
           0   1   2   3
-  TEXT
+    TEXT
   end
 
   # 13
   describe "AI" do
     describe "Random AI" do
-      let(:ai) { Player::DumAi.new("A") }
+      let(:ai_handler) { DumAi.new() }
+      let(:ai) { Player::Core.new("DumAi", "A") }
       let(:game) {
         init = GameInitiative.new
         init.add_player ai
@@ -314,7 +315,7 @@ describe "Game" do
       }
 
       it "return array with with coordinates" do
-        x, y = ai.play_turn game
+        x, y = ai_handler.call game
 
         expect(x).to be_a(Integer)
         expect(y).to be_a(Integer)
@@ -322,14 +323,13 @@ describe "Game" do
 
       it "return different moves" do
         expect(
-          10.times.map { ai.play_turn game }.uniq.length
+          10.times.map { ai_handler.call game }.uniq.length
         ).to be > 1
-        x, y = ai.play_turn game
       end
 
       it "play on available places" do
         8.times {
-          x, y = ai.play_turn(game)
+          x, y = ai_handler.call(game)
           game.play_turn ai, x, y
         }
         expect(game.board.length).to eq(8)

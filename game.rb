@@ -1,3 +1,15 @@
+class DumAi
+  def call game
+    (0...game.dimension)
+      .to_a
+      .permutation(2)
+      .to_a
+      .concat((0...game.dimension).zip(0...game.dimension))
+      .select{|pos| game.board[pos].nil?}
+      .sample
+  end
+end
+
 module Player
   class Core
     attr_reader :symbol
@@ -6,30 +18,6 @@ module Player
     def initialize(name, symbol)
       @symbol = symbol
       @name = name
-    end
-  end
-
-  class Terminal < Core
-    def play_turn game
-      print "#{name}, it's your turn, enter your coordinates x y: "
-      return gets.split(" ", 2).map(&:to_i)
-    end
-  end
-
-  class DumAi < Core
-    def initialize(symbol)
-      @name = "Dum AI"
-      @symbol = symbol
-    end
-
-    def play_turn game
-      (0...game.dimension)
-        .to_a
-        .permutation(2)
-        .to_a
-        .concat((0...game.dimension).zip(0...game.dimension))
-        .select{|pos| game.board[pos].nil?}
-        .sample
     end
   end
 end
