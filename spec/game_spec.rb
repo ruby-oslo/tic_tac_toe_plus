@@ -1,6 +1,8 @@
 require_relative "../game"
 
 describe "Game" do
+
+  ## 1
   it "creates player" do
     player = Player::Core.new("Toivo", "X")
 
@@ -8,6 +10,7 @@ describe "Game" do
     expect(player.symbol).to eq("X")
   end
 
+  ## 2
   let(:toivo) { Player::Core.new("Toivo", "X") }
   let(:simon) { Player::Core.new("Simon", "O") }
 
@@ -20,6 +23,7 @@ describe "Game" do
     expect(game).to be_a(Game)
   end
 
+  ## 3
   context "game between Toivo and Simon" do
     let(:game) {
       init = GameInitiative.new
@@ -48,6 +52,7 @@ describe "Game" do
       }.to raise_error("off the grid")
     end
 
+    ## 4
     it "can out put in ascii" do
       expect(game.to_terminal).to eq(<<~TEXT)
           0   1   2
@@ -60,6 +65,7 @@ describe "Game" do
       TEXT
     end
 
+    ## 5
     it "draws one played move into the game" do
       game.play_turn toivo, 1, 1
 
@@ -74,6 +80,7 @@ describe "Game" do
       TEXT
     end
 
+    ## 6
     it "draws multiple played move into the game" do
       game.play_turn toivo, 0, 0
       game.play_turn simon, 0, 1
@@ -91,6 +98,7 @@ describe "Game" do
       TEXT
     end
 
+    ## 7
     it "determines a winner when thats the case" do
       game.play_turn toivo, 0, 0
       game.play_turn simon, 0, 1
@@ -101,6 +109,7 @@ describe "Game" do
       expect(game.winner).to eq(toivo)
     end
 
+    ## 8
     it "determines a winner when thats the case #2" do
       game.play_turn toivo, 0, 0
       game.play_turn simon, 0, 1
@@ -111,6 +120,7 @@ describe "Game" do
       expect(game.winner).to eq(toivo)
     end
 
+    ## 9
     it "starts a new game then the table is full and not winner yet" do
       game.play_turn toivo, 0, 0
       game.play_turn simon, 0, 1
@@ -135,8 +145,9 @@ describe "Game" do
           0   1   2
       TEXT
     end
-  end
+  end # of context "game between Toivo and Simon"
 
+  ## 10
   describe "table size 5 x 5" do
     let(:game) {
       init = GameInitiative.new
@@ -210,6 +221,7 @@ describe "Game" do
     end
   end
 
+  ## 11
   describe "table size 10 x 10" do
     let(:game) {
       init = GameInitiative.new
@@ -260,6 +272,7 @@ describe "Game" do
     end
   end
 
+  # 12
   it "let multiple user play the game together" do
     init = GameInitiative.new
     telhaug = Player::Core.new("Telhaug", "👪")
@@ -290,6 +303,7 @@ describe "Game" do
   TEXT
   end
 
+  # 13
   describe "AI" do
     describe "Random AI" do
       let(:ai) { Player::DumAi.new("A") }
@@ -322,5 +336,7 @@ describe "Game" do
       end
     end
   end
+
+  ## 99
 end
 
